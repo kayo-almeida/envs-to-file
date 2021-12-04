@@ -13,14 +13,18 @@ inputs:
     description: "Name of file (default is .env)"
     required: false
     default: ".env"
+  aws-region:
+    description: "AWS Region (default: us-east-1)"
+    required: false
+    default: "us-east-1"
 outputs:
   file:
-    description: "The generate file path"
-    value: ${{ github.action_path }}/${{ inputs.file-name }}
+    description: "The generate file"
+    value: ${{ inputs.file-name }}
 runs:
   using: "composite"
   steps:
     - run: |
-        source ${{ github.action_path }}/envs-to-file.sh ${{ inputs.parameters-path }} ${{ inputs.secrets-path }} ${{ inputs.file-name }}
+        source ${{ github.action_path }}/envs-to-file.sh ${{ inputs.parameters-path }} ${{ inputs.secrets-path }} ${{ inputs.file-name }} ${{ inputs.aws-region }}
         env >> $GITHUB_ENV
       shell: bash

@@ -2,6 +2,7 @@
 PARAMETERS_PATH=$1
 SECRETS_PATH=$2
 OUTPUT_FILE=$3
+AWS_REGION=$4
 
 # create blank file
 echo "" > $OUTPUT_FILE
@@ -11,7 +12,7 @@ if [ -n "$PARAMETERS_PATH" ]; then
   echo "\n\n🔄 loading environment variables from parameter store...\n\n"
 
   VAR_DATA=$(echo $(aws ssm get-parameters-by-path \
-    --region us-east-1 \
+    --region $AWS_REGION \
     --with-decryption \
     --path "$PARAMETERS_PATH" \
     --query 'Parameters[].[Name,Value]' \
@@ -29,13 +30,13 @@ if [ -n "$SECRETS_PATH" ]; then
   echo "\n\n🔄 loading environment variables from secret manager...\n\n"
 
   SECRET_LIST=$(echo $(aws secretsmanager list-secrets \
-  --region us-east-1 \
+  --region $AWS_REGION \
   --filters Key=name,Values=$SECRETS_PATH \
   --max-items 500 | jq --raw-output '.SecretList[].Name'))
 
   for secret in $SECRET_LIST; do
     SECRET_ITEMS=$(echo $(aws secretsmanager get-secret-value \
-    --region us-east-1 \
+    --region $AWS_REGION \
     --secret-id $secret --query '[SecretString]' --output text) | \
     sed "s/{//g" | sed "s/\":/XABLAU_REPLACE/g" | sed "s/\"//g" | sed "s/,/\" /g" | sed "s/}/\"/g" | sed "s/XABLAU_REPLACE/=\"/g")
     
