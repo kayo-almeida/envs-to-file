@@ -14,13 +14,13 @@ inputs:
     required: false
     default: ".env"
 outputs:
-  random-number:
-    description: "Random number"
-    value: ${{ steps.random-number-generator.outputs.random-id }}
+  file:
+    description: "The generate file path"
+    value: ${{ github.action_path }}/${{ inputs.file-name }}
 runs:
   using: "composite"
   steps:
     - run: |
-        source ./envs-to-file.sh ${{ inputs.parameters-path }} ${{ inputs.secrets-path }} ${{ inputs.file-name }}
+        source ${{ github.action_path }}/envs-to-file.sh ${{ inputs.parameters-path }} ${{ inputs.secrets-path }} ${{ inputs.file-name }}
         env >> $GITHUB_ENV
       shell: bash
