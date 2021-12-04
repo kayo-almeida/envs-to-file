@@ -23,3 +23,4 @@ runs:
     - run: |
         source ./envs-to-file.sh ${{ inputs.parameters-path }} ${{ inputs.secrets-path }} ${{ inputs.file-name }}
         env >> $GITHUB_ENV
+      shell: bash
