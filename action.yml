@@ -1,0 +1,25 @@
+name: "Environment variables to file"
+description: "Get AWS parameters and secrets and create a file"
+inputs:
+  parameters-path:
+    description: "Path of parameters of parameter store"
+    required: false
+    default: ""
+  secrets-path:
+    description: "Path of secrets of secret manager"
+    required: false
+    default: ""
+  file-name:
+    description: "Name of file (default is .env)"
+    required: false
+    default: ".env"
+outputs:
+  random-number:
+    description: "Random number"
+    value: ${{ steps.random-number-generator.outputs.random-id }}
+runs:
+  using: "composite"
+  steps:
+    - run: |
+        source ./envs-to-file.sh ${{ inputs.parameters-path }} ${{ inputs.secrets-path }} ${{ inputs.file-name }}
+        env >> $GITHUB_ENV
