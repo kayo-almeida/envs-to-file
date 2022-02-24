@@ -37,10 +37,11 @@ if [ -n "$SECRETS_PATH" ]; then
   for secret in $SECRET_LIST; do
     SECRET_ITEMS=$(echo $(aws secretsmanager get-secret-value \
     --region $AWS_REGION \
-    --secret-id $secret --query '[SecretString]' --output text) | \
-    sed "s/{//g" | sed "s/\":/XABLAU_REPLACE/g" | sed "s/\"//g" | sed "s/,/\" /g" | sed "s/}/\"/g" | sed "s/XABLAU_REPLACE/=\"/g")
-    
-    echo $SECRET_ITEMS | sed -e "s/\" /\"\n/g" >> $OUTPUT_FILE
+    --secret-id $secret --query '[SecretString]' --output text))
+
+    for s in $(echo $SECRET_ITEMS | jq -r "to_entries|map(\"\(.key)=\(.value|tostring)\")|.[]" ); do
+        echo $s >> $OUTPUT_FILE
+    done
   done
 fi
 
